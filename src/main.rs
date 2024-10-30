@@ -149,5 +149,5 @@ fn main() {
     .unwrap();
     getfiles(opts.hidden, path);
     let link = "https://github.com/lvzrr";
-    println!("\n\n[Sniff CLI] Developed by: {}\n", link)
+    println!("\n\n   / \\__\n  (    @\\___  *snif\n  /         O\n /   (_____/\n/_____/        Developed by: {}",link);
 }
