@@ -1,6 +1,3 @@
-use std::char;
-use std::fmt::format;
-
 const PYTHON_ICO: &str = "";
 const RUST_ICO: &str = "";
 const TOML_ICO: &str = "";
@@ -75,6 +72,7 @@ const FOLDER_ICO: &str = "";
 const REG_ICO: &str = "";
 const BIN_ICO: &str = "";
 const CONF_FOLDER_ICO: &str = "";
+const SYMLINK_ICO: &str = "";
 
 // Bright ANSI color codes
 pub const WHITE: &str = "\x1B[37m";
@@ -90,10 +88,11 @@ pub const BLACK_OVER_WHITE: &str = "\x1b[30m\x1b[1;47m";
 // Reset code to reset styling
 pub const RESET: &str = "\x1b[0m";
 
-pub fn geticon(filename: &String, isdir: bool) -> String {
+pub fn geticon(filename: &String, isdir: bool, is_sym: bool) -> String {
     match filename {
         _ if isdir && filename.starts_with('.') => CONF_FOLDER_ICO.to_string(),
         _ if isdir => FOLDER_ICO.to_string(),
+        _ if is_sym || filename.ends_with(".lnk") => SYMLINK_ICO.to_string(),
         _ if filename.ends_with(".exe") => EXE_ICO.to_string(),
         _ if filename.starts_with('.') => CONF_ICO.to_string(),
         _ if filename.ends_with(".py") => PYTHON_ICO.to_string(),
@@ -157,11 +156,12 @@ pub fn geticon(filename: &String, isdir: bool) -> String {
         _ => "".to_string(), // Default icon
     }
 }
-pub fn get_color(filename: &str, isdir: bool) -> String {
+pub fn get_color(filename: &str, isdir: bool, is_sym: bool) -> String {
     match filename {
         _ if filename.ends_with(".exe") => BRIGHT_RED.to_string(),
         _ if isdir && filename.starts_with('.') => BRIGHT_WHITE.to_string(),
         _ if isdir => BRIGHT_CYAN.to_string(),
+        _ if is_sym || filename.ends_with(".lnk") => BRIGHT_MAGENTA.to_string(),
         _ if filename.starts_with('.') => BRIGHT_YELLOW.to_string(),
         _ if filename.ends_with(".py") => BRIGHT_YELLOW.to_string(),
         _ if filename.ends_with(".rs") => BRIGHT_GREEN.to_string(),
