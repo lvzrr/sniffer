@@ -177,13 +177,15 @@ pub fn print_help() {
     println!("\n{}\n", "[SNIFF ARGUMENTS SCHEMA] sniff <opts> <path>");
 
     println!(
-        "{:15} {:15}\n{:15} {:15}\n{:15} {:15}\n",
-        "-help, help",
+        "{:20} {:15}\n{:20} {:15}\n{:20} {:15}\n{:20} {:15}\n",
+        "-man, -help, help",
         "Print this msg",
-        "-h , -hidden",
+        "-h, -hid, -hidden",
         "Allow hidden files (dotfiles)",
-        "-path , -p",
-        "Path to list"
+        "-path, -p",
+        "Path to list",
+        "-r, -t, -tree",
+        "Display a recursive tree of the subdirectories"
     );
 }
 
