@@ -9,7 +9,7 @@
  *
  */
 use std::{env, path::PathBuf};
-use toolkit::{get_arg_opts, show_files, Argopts};
+use toolkit::{get_arg_opts, print_headers, show_files, Argopts};
 fn main() {
     let opts: Argopts = get_arg_opts();
     let mut path = PathBuf::from(env::current_dir().unwrap());
@@ -19,7 +19,11 @@ fn main() {
         path.push(&opts.exp_path);
     }
     if path.is_dir() {
-        show_files(opts.hidden, path);
+        print_headers(&path);
+        match opts.tree {
+            true => show_files(opts.hidden, path, 0, true),
+            false => show_files(opts.hidden, path, 0, false),
+        }
         let link = "https://github.com/lvzrr";
         println!("\n\n   / \\__\n  (    @\\___  *snif\n  /         O\n /   (_____/\n/_____/        Developed by: {}",link);
     }

@@ -23,15 +23,35 @@ mod matcher;
  *
  */
 
-pub fn show_files(allowhidden: bool, path: PathBuf) {
-    print_headers(&path);
-    let dir = fs::read_dir(path).unwrap();
+pub fn show_files(allowhidden: bool, path: PathBuf, mut recursive: u8, mut recursive_check: bool) {
+    let dir = fs::read_dir(&path).unwrap();
     for f in dir {
         let entry = f.unwrap();
         let mut ent: Entry = Entry::new();
         ent.collectdata(entry);
-        if !ent.is_hidden() || allowhidden {
+        if (!ent.is_hidden() || allowhidden) && recursive == 0 {
             println!("{}", &ent);
+        }
+        if recursive >= 1 && (!ent.is_hidden() || allowhidden) {
+            println!(
+                "{:6} {:20} {:10} {} |-{:3}{:15} {}",
+                &ent.perm,
+                &ent.lastmod,
+                &ent.filesize,
+                &ent.color,
+                &ent.ico,
+                &ent.filename,
+                matcher::RESET
+            );
+        }
+        if recursive_check && ent.dir && (!ent.is_hidden() || allowhidden) {
+            recursive += 1;
+            recursive_check = false;
+            let mut recpath = path.clone();
+            recpath.push(&ent.filename);
+            show_files(allowhidden.clone(), recpath, recursive, recursive_check);
+            recursive = 0;
+            recursive_check = true;
         }
     }
 }
@@ -134,7 +154,7 @@ fn str_builder(
  *
  */
 
-fn print_headers(path: &PathBuf) {
+pub fn print_headers(path: &PathBuf) {
     println!(
         "\n\n {}\n\n{}{:6} {:20} {:>10} {:3} {:15}\n{:6} {:20} {:>10} {:3} {:15}{}",
         path.to_string_lossy().to_string(),
@@ -179,6 +199,7 @@ pub struct Argopts {
     pub hidden: bool,
     pub explicit_path: bool,
     pub exp_path: String,
+    pub tree: bool,
 }
 impl fmt::Display for Argopts {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
@@ -189,8 +210,8 @@ impl fmt::Display for Argopts {
         )
     }
 }
-const VALID_ARGS: [&str; 8] = [
-    "-p", "-path", "-hid", "-hidden", "-man", "-h", "-hidden", "help",
+const VALID_ARGS: [&str; 11] = [
+    "-p", "-path", "-hid", "-hidden", "-man", "-h", "-hidden", "help", "-tree", "-r", "-t",
 ];
 
 pub fn get_arg_opts() -> Argopts {
@@ -198,6 +219,7 @@ pub fn get_arg_opts() -> Argopts {
         hidden: false,
         explicit_path: false,
         exp_path: ".".to_string(),
+        tree: false,
     };
     let mut argv: Vec<String> = env::args().collect();
     argv.remove(0);
@@ -226,6 +248,7 @@ pub fn get_arg_opts() -> Argopts {
                 print_help();
                 exit(0);
             }
+            "-r" | "-tree" | "-t" => opts.tree = true,
             _ => (),
         }
         cont += 1;
